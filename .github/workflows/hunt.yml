@@ -1,0 +1,73 @@
+name: Job Hunt
+
+on:
+  repository_dispatch:
+    types: [hunt]
+  workflow_dispatch:
+    inputs:
+      query:
+        description: 'Job Search Query'
+        required: true
+        default: 'Junior Software Developer'
+      location:
+        description: 'Location'
+        required: true
+        default: 'London, Ontario'
+
+jobs:
+  hunt:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Set up Python 3.11
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+          playwright install chromium
+
+      - name: Prepare Config
+        run: |
+          if [ "${{ github.event_name }}" == "repository_dispatch" ]; then
+            echo '${{ toJson(github.event.client_payload) }}' > config.json
+          else
+            echo '{"query": "${{ github.event.inputs.query }}", "location": "${{ github.event.inputs.location }}"}' > config.json
+          fi
+          RUN_ID=$(jq -r '.run_id // empty' config.json)
+          if [ -z "$RUN_ID" ]; then
+            RUN_ID="run_$(date +%s)"
+            jq --arg id "$RUN_ID" '. + {run_id: $id}' config.json > config.json.tmp && mv config.json.tmp config.json
+          fi
+          echo "RUN_ID=$RUN_ID" >> $GITHUB_ENV
+
+      - name: Run Job Search
+        env:
+          APIFY_TOKEN: ${{ secrets.APIFY_TOKEN }}
+        run: |
+          python backend/orchestrate_search.py --config config.json --run-id ${{ env.RUN_ID }} --all
+
+      - name: Prepare Frontend Results
+        run: |
+          mkdir -p frontend/public/results
+          if [ -f "data/${{ env.RUN_ID }}/master_listings.json" ]; then
+            cp "data/${{ env.RUN_ID }}/master_listings.json" "frontend/public/results/${{ env.RUN_ID }}.json"
+          fi
+
+      - name: Commit and Push Results
+        run: |
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action"
+          git add data/
+          git add readable_summaries/
+          git add frontend/public/results/
+          git commit -m "Results for hunt ${{ env.RUN_ID }}" || echo "No changes to commit"
+          git push origin master

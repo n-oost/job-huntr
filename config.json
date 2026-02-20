@@ -1,0 +1,25 @@
+{
+  "query": "Junior Software Developer",
+  "location": "London, Ontario",
+  "positive_keywords": {
+    "Python": 3,
+    "TypeScript": 3,
+    "Next.js": 3,
+    "AI": 4,
+    "Agent": 4,
+    "LLM": 4,
+    "Machine Learning": 3,
+    "React": 2,
+    "Godot": 2,
+    "Automation": 2,
+    "Junior": 2,
+    "Remote": 2
+  },
+  "negative_keywords": {
+    "Senior": -5,
+    "Lead": -3,
+    "Manager": -3,
+    "Staff": -5,
+    "Principal": -5
+  }
+}
