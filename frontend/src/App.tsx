@@ -33,14 +33,20 @@ function App() {
     setRunId(newRunId)
 
     try {
-      // Call our secure Vercel Proxy instead of GitHub directly
-      const response = await fetch('/api/trigger', {
+      // Call GitHub API directly (Serverless / GitHub Pages support)
+      // We treat the "password" field as the GitHub Personal Access Token (PAT)
+      const REPO_OWNER = 'noahoosting' // Update if you fork this repo
+      const REPO_NAME = 'job-huntr'
+
+      const response = await fetch(`https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/dispatches`, {
         method: 'POST',
         headers: {
+          'Authorization': `token ${password}`,
+          'Accept': 'application/vnd.github.v3+json',
           'Content-Type': 'application/json'
         },
         body: JSON.stringify({
-          password: password,
+          event_type: 'hunt',
           client_payload: {
             query,
             location,
@@ -50,8 +56,9 @@ function App() {
       })
 
       if (!response.ok) {
-        const errData = await response.json()
-        throw new Error(errData.error || `Error: ${response.statusText}`)
+        // GitHub API returns text/html for some errors, or json for others
+        const errorText = await response.text()
+        throw new Error(`GitHub API Error (${response.status}): ${errorText}`)
       }
 
       console.log('Hunt triggered successfully!')
@@ -126,15 +133,15 @@ function App() {
                 </Form.Group>
 
                 <Form.Group className="mb-4">
-                  <Form.Label>Access Password</Form.Label>
+                  <Form.Label>GitHub Personal Access Token (PAT)</Form.Label>
                   <Form.Control 
                     type="password" 
                     value={password} 
                     onChange={(e) => setPassword(e.target.value)}
-                    placeholder="Enter shared password..."
+                    placeholder="Enter your GitHub PAT (repo scope)..."
                   />
                   <Form.Text className="text-muted">
-                    This secures the app from unauthorized use.
+                    This token is used directly to trigger the workflow. It is not stored.
                   </Form.Text>
                 </Form.Group>
 
