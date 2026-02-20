@@ -69,11 +69,19 @@ function App() {
           // Poll results from GitHub Pages
           const url = `https://n-oost.github.io/job-huntr/results/${runId}.json`
           const response = await fetch(url)
+          
           if (response.ok) {
-            const data = await response.json()
-            setResults(data)
-            setLoading(false)
-            clearInterval(interval)
+            const contentType = response.headers.get("content-type");
+            if (contentType && contentType.indexOf("application/json") !== -1) {
+              const data = await response.json()
+              setResults(data)
+              setLoading(false)
+              clearInterval(interval)
+            } else {
+              console.log('File found but not JSON yet (likely 404 HTML)...')
+            }
+          } else {
+             console.log(`Waiting for results... (${response.status})`)
           }
         } catch (err) {
           console.log('Still waiting for results...')

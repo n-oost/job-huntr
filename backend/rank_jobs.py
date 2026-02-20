@@ -130,6 +130,7 @@ def main():
     parser = argparse.ArgumentParser(description="⚖️ Rank and merge job listings")
     parser.add_argument("--config", type=str, help="Path to config JSON file")
     parser.add_argument("--run-id", type=str, help="Run ID for this search session")
+    parser.add_argument("--output-dir", type=str, help="Output directory (unused, for compatibility)")
     args = parser.parse_args()
 
     data_dir = DEFAULT_DATA_DIR
