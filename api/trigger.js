@@ -10,7 +10,7 @@ export default async function handler(request, response) {
   const CORRECT_PASSWORD = process.env.APP_PASSWORD;
   const GITHUB_TOKEN = process.env.GITHUB_PAT;
   const REPO_OWNER = process.env.GITHUB_USER || 'noahoosting';
-  const REPO_NAME = 'JOB-HUNTR';
+  const REPO_NAME = 'job-huntr';
 
   if (!CORRECT_PASSWORD || !GITHUB_TOKEN) {
     return response.status(500).json({ error: 'Server misconfiguration: Secrets missing.' });

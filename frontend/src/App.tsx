@@ -67,7 +67,7 @@ function App() {
       interval = setInterval(async () => {
         try {
           // Poll results from GitHub Pages
-          const url = `https://noahoosting.github.io/JOB-HUNTR/results/${runId}.json`
+          const url = `https://n-oost.github.io/job-huntr/results/${runId}.json`
           const response = await fetch(url)
           if (response.ok) {
             const data = await response.json()
