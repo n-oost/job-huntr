@@ -35,7 +35,7 @@ function App() {
     try {
       // Call GitHub API directly (Serverless / GitHub Pages support)
       // We treat the "password" field as the GitHub Personal Access Token (PAT)
-      const REPO_OWNER = 'noahoosting' // Update if you fork this repo
+      const REPO_OWNER = 'n-oost' // Update if you fork this repo
       const REPO_NAME = 'job-huntr'
 
       const response = await fetch(`https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/dispatches`, {
