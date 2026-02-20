@@ -41,7 +41,7 @@ function App() {
       const response = await fetch(`https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/dispatches`, {
         method: 'POST',
         headers: {
-          'Authorization': `token ${password}`,
+          'Authorization': `Bearer ${password}`,
           'Accept': 'application/vnd.github.v3+json',
           'Content-Type': 'application/json'
         },
